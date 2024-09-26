@@ -1,0 +1,152 @@
+.room_name {
+  position: fixed;
+  color: #000000;
+  text-align: center;
+  border: 0.1em solid #000000;
+  padding: 1%;
+  border-radius: 5%;
+  font-size: calc(0.9vw + 0.1vh);
+}
+
+.room_name{
+  height: 30vh;
+  width: 13vw;
+}
+
+.hal1 {
+  animation: blinker 1s linear infinite;
+  top: 55%;
+  left: 15%;
+  background-color: #f7ffaa;
+  width: 16%;
+  height: 24%;
+}
+
+.hal2 {
+  animation: blinker 1s linear infinite;
+  top: 58%;
+  left: 44.5%;
+  background-color: #d9b8f8;
+  width: 12%;
+  height: 22%;
+}
+
+.hal3 {
+  animation: blinker 1s linear infinite;
+  top: 55%;
+  left: 53%;
+  margin-left: 6%;
+  background-color: #e69159;
+  width: 12%;
+  height: 22%;
+}
+
+.hal4 {
+  animation: blinker 1s linear infinite;
+  top: 10%;
+  left: 50%;
+  background-color: #ee6829;
+  width: 11.5%;
+  height: 30%;
+}
+
+.hal5 {
+  animation: blinker 1s linear infinite;
+  top: 10%;
+  left: 65%;
+  margin-left: 1.5%;
+  background-color: #4ff6fc;
+  width: 11.5%;
+  height: 30%;
+}
+
+.hal-header {
+  margin-bottom: 5%;
+  border-radius: 5%;
+  font-size: calc(1.2vw + 0.1vh);
+  font-weight: bold;
+}
+
+.temp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: calc(0.9vw + 0.1vh);
+  border-radius: 5%;
+}
+
+.room-type {
+  margin-bottom: 10%;
+  border-radius: 5%;
+  font-size: calc(0.9vw + 0.1vh);
+}
+
+.temp-box {
+  width: 40%;
+  height: 25%;
+  opacity: 90%;
+  color: black;
+  align-items: center;
+  justify-content: stretch;
+  border-radius: 4%;
+  font-family: "Amazon Ember", Arial, sans-serif;
+  margin: 5%;
+}
+
+ th, td {
+  border: 0.1em solid black;
+  width: 350%;
+  background-color: #e7e5e5;
+  height: 10%;
+  right: 100%;
+  margin-left: auto;
+}
+
+#sirenalogo {
+  width: 15vw;
+  position: relative;
+  margin-top: 0.8%;
+  margin-left: 1.5%;
+  cursor: pointer;
+}
+
+#hovmarklogo {
+  position: fixed;
+  bottom: 1.3%;
+  left: 3%;
+  width: 8vw;
+  height: 4vh;
+}
+
+#ojcomfortlogo {
+  position: fixed;
+  bottom: 1%;
+  left: 13%;
+  width: 3%
+}
+
+#button-13 {
+  background-color: lightgrey;
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
+  box-sizing: border-box;
+  color: #0f1111;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Amazon Ember", sans-serif;
+  font-size: calc(0.7vw + 0.1vh);
+  line-height: 29px;
+  padding: 0 10px 0 11px;
+  position: fixed;
+  text-align: center;
+  vertical-align: middle;
+  margin-top: 0.8%;
+  margin-left: 4.5%;
+  height: 4vh;
+  width: 5vw;
+}
+
+ input[type="text"] {
+  width: 50px;
+}
