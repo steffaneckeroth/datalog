@@ -88,7 +88,6 @@ if ($db->connect()) {
 
 <style>
 
-
     table, th, td {
         border: 1px solid black;
         border-collapse: collapse;
@@ -105,8 +104,6 @@ if ($db->connect()) {
         width: 25px;
     }
 
-
-
     .vertical-offset-25 {
         padding: 25px;
     }
@@ -115,21 +112,24 @@ if ($db->connect()) {
         width: 100px !important;
     }
 
-    .inputDateRange{
+    .inputDateRange {
         width: 350px !important;
     }
 
     input[type="text"] {
         display: block;
-        margin : 0 auto;
+        margin: 0 auto;
     }
 
-    #btnDateRange{
+    #btnDateRange {
         display: block;
         margin: 0 auto;
     }
 
-    div { display: table; }
+    div {
+        display: table;
+    }
+
     div.t {
         display: table-cell;
         width: 100%;
@@ -142,6 +142,30 @@ if ($db->connect()) {
     p {
         margin-top: -10px !important;
         margin-bottom: 0 !important;
+    }
+
+    /* Tilføjelser for at skjule kalenderen og vise kun tid */
+    .daterangepicker .calendar-table,
+    .daterangepicker .calendar-time div {
+        display: none;  /* Skjul kalenderen */
+    }
+
+    .daterangepicker .drp-calendar {
+        width: 100%;  /* Udvid tidsvælgeren */
+    }
+
+    .daterangepicker .ranges {
+        display: none;  /* Skjul hurtigvalg som "i dag" osv. */
+    }
+
+    /* Sikrer, at input felterne passer med daterangepicker stilen */
+    .daterangepicker .drp-buttons {
+        display: flex;
+        justify-content: center;
+    }
+
+    .daterangepicker .drp-calendar {
+        padding: 10px;
     }
 
 </style>
