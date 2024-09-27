@@ -20,32 +20,46 @@ if ($db->connect()) {
         $params = array(date('Y-m-d H:i:s'), 2, $message);
         $db->query($sql, $params);
     } else if (isset($_POST['room']) && isset($_POST['room_id']) && isset($_POST['datetimes'])) {
-        //Create Afrim and Log
+
         $room_id = filter_input(INPUT_POST, 'room_id', FILTER_VALIDATE_INT);
         $room = filter_input(INPUT_POST, 'room', FILTER_SANITIZE_STRING);
         $datetimes = filter_input(INPUT_POST, 'datetimes', FILTER_SANITIZE_STRING);
 
-        // Split start and stop times (HH:mm format)
         $daterange = explode(' - ', $datetimes);
         $start_time = trim($daterange[0]);
         $stop_time = trim($daterange[1]);
 
-        // Tilføj dags dato til start- og stoptidspunkterne
         $today = date('Y-m-d');
-        $start_time_full = $today . ' ' . $start_time . ':00';  // Laver til format Y-m-d H:i:s
-        $stop_time_full = $today . ' ' . $stop_time . ':00';    // Tilføj sekunder
+        $start_time_today = $today . ' ' . $start_time . ':00';  // Laver til format Y-m-d H:i:s
+        $stop_time_today = $today . ' ' . $stop_time . ':00';    // Tilføj sekunder
 
-        // Indsæt værdier i afrim-tabellen
-        $sql = "INSERT INTO afrim (start_time, stop_time, room_id) VALUES (?, ?, ?);";
-        $params = array($start_time_full, $stop_time_full, $room_id);
-        $db->query($sql, $params);
+        // Tjekker om der allerede er en afrim record for det givne rum_id
+        $sql = "SELECT * FROM afrim WHERE room_id = ? AND start_time = ? AND stop_time = ?";
+        $params = array($room_id, $start_time_today, $stop_time_today);
+        $existing_record = $db->query($sql, $params);
 
-        // Opret logbesked
-        $message = "Afrim sat fra " . $start_time . " til " . $stop_time . " på rum " . $room;
+        if ($existing_record) {
+            // Hvis der findes en record, opdater den
+            $sql = "UPDATE afrim SET start_time = ?, stop_time = ? WHERE room_id = ?;";
+            $params = array($start_time_today, $stop_time_today, $room_id);
+            $db->query($sql, $params);
+
+            $message = "Afrim opdateret fra " . $start_time . " til " . $stop_time . " på rum " . $room;
+        } else {
+            // Hvis der ikke findes en record, indsæt en ny
+            $sql = "INSERT INTO afrim (start_time, stop_time, room_id) VALUES (?, ?, ?);";
+            $params = array($start_time_today, $stop_time_today, $room_id);
+            $db->query($sql, $params);
+
+            $message = "Afrim sat fra " . $start_time . " til " . $stop_time . " på rum " . $room;
+        }
+
+        // Log besked
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
         $params = array(date('Y-m-d H:i:s'), 3, $message);
         $db->query($sql, $params);
     }
+
 
     $message = "Afrim sat fra " . str_replace(" - ", " til ", $datetimes) . " på rum " . $room;
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
@@ -187,7 +201,6 @@ if ($db->connect()) {
     }
 
 </style>
-
 <meta http-equiv="refresh" content="300">
 <link rel="stylesheet" type="text/css" href="/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="/daterangepicker.css"/>
@@ -211,50 +224,58 @@ if ($db->connect()) {
                 </thead>
                 <tbody>
                 <?php foreach ($data as $item) : ?>
-                    <tr>
-                        <td><?php echo $item['room']; ?></td>
-                        <td><?php echo $item['sensor']; ?><br/><?php echo $item['sensor2']; ?></td>
-                        <td><?php echo $item['temp']; ?> C&deg;<br/><?php echo $item['temp2']; ?> C&deg;</td>
-                        <td>
-                            <form name="setpunkt_form" method="POST" action="/table.php" accept-charset="UTF-8"><input
-                                        type="hidden" name="room_id" value="<?php echo $item['room_id']; ?>"/><input
-                                        type="hidden" class="form-control" placeholder="old_setpunkt"
-                                        name="old_setpunkt" value="<?php echo $item['setpunkt']; ?>"/><input
-                                        type="hidden" class="form-control" placeholder="room" name="room"
-                                        value="<?php echo $item['room']; ?>"/><div class="t"><input type="text" class="form-control"
-                                                                                     placeholder="setpunkt"
-                                                                                     name="setpunkt" required=""
-                                                                                     autofocus=""
-                                                                                     value="<?php echo $item['setpunkt']; ?>"/></div>
-                                <div class="t"><button id="button-13" type="submit" name="submit">Gem</button></div>
-                            </form>
-                        </td>
-                        <td><?php echo $item['alarm']; ?><?php if ($item['status'] == 1) : ?>
-                                <form name="setpunkt_form" method="POST" action="/table.php" accept-charset="UTF-8">
-                                <input type="hidden" name="room_id" value="<?php echo $item['room_id']; ?>"/><input
-                                        type="hidden" class="form-control" placeholder="room" name="room"
-                                        value="<?php echo $item['room']; ?>"/>
-                                <button id="button-13" type="submit" name="submit">Kvitter alarm</button>
-                                </form><?php endif; ?></td>
+                <tr>
+                    <td><?php echo $item['room']; ?></td>
+                    <td><?php echo $item['sensor']; ?><br/><?php echo $item['sensor2']; ?></td>
+                    <td><?php echo $item['temp']; ?> C&deg;<br/><?php echo $item['temp2']; ?> C&deg;</td>
+                    <td>
+                        <form name="setpunkt_form" method="POST" action="/table.php" accept-charset="UTF-8">
+                            <input type="hidden" name="room_id" value="<?php echo $item['room_id']; ?>"/>
+                            <input type="hidden" class="form-control" placeholder="old_setpunkt"
+                                   name="old_setpunkt" value="<?php echo $item['setpunkt']; ?>"/>
+                            <input type="hidden" class="form-control" placeholder="room" name="room"
+                                   value="<?php echo $item['room']; ?>"/>
+                            <div class="t">
+                                <input type="text" class="form-control"
+                                       placeholder="setpunkt"
+                                       name="setpunkt" required=""
+                                       autofocus=""
+                                       value="<?php echo $item['setpunkt']; ?>"/>
+                            </div>
+                            <div class="t">
+                                <button id="button-13" type="submit" name="submit">Gem</button>
+                            </div>
+                        </form>
+                    </td>
+                    <td><?php echo $item['alarm']; ?><?php if ($item['status'] == 1) : ?>
+                        <form name="setpunkt_form" method="POST" action="/table.php" accept-charset="UTF-8">
+                            <input type="hidden" name="room_id" value="<?php echo $item['room_id']; ?>"/>
+                            <input type="hidden" class="form-control" placeholder="room" name="room"
+                                   value="<?php echo $item['room']; ?>"/>
+                            <button id="button-13" type="submit" name="submit">Kvitter alarm</button>
+                        </form><?php endif; ?></td>
 
-                        <td class="leftText">
-                            <form name="afrim_form" method="POST" action="/table.php" accept-charset="UTF-8">
-                                <input type="hidden" name="room_id" value="<?php echo $item['room_id']; ?>"/>
-                                <input type="hidden" class="form-control" placeholder="room" name="room"
-                                       value="<?php echo $item['room']; ?>"/>
-                                <div class="t">
-                                <input class="inputDateRange" type="text" name="datetimes"/>
-                                </div>
-                                <div class="t">
-                                <button class="button-13"
-                                        id="btnDateRange"
-                                        type="submit" name="submit">Gem
-                                </button>
-                                </div>
-                            </form>
-
-                        </td>
-                    </tr>
+                    <td class="leftText">
+                        <form name="afrim_form" method="POST" action="/table.php" accept-charset="UTF-8">
+                            <input type="hidden" name="room_id" value="<?php echo $item['room_id']; ?>"/>
+                            <input type="hidden" class="form-control" placeholder="room" name="room"
+                                   value="<?php echo $item['room']; ?>"/>
+                            <div class="t">
+                                <label for="start_time">Start Tid:</label>
+                                <input type="number" class="form-control" name="start_hour" min="0" max="23" placeholder="HH" required>
+                                <input type="number" class="form-control" name="start_minute" min="0" max="59" placeholder="MM" required>
+                            </div>
+                            <div class="t">
+                                <label for="stop_time">Slut Tid:</label>
+                                <input type="number" class="form-control" name="stop_hour" min="0" max="23" placeholder="HH" required>
+                                <input type="number" class="form-control" name="stop_minute" min="0" max="59" placeholder="MM" required>
+                            </div>
+                            <div class="t">
+                                <button class="button-13" id="btnDateRange" type="submit" name="submit">Gem</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>
