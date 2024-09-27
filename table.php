@@ -19,17 +19,35 @@ if ($db->connect()) {
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
         $params = array(date('Y-m-d H:i:s'), 2, $message);
         $db->query($sql, $params);
-    } else if (isset($_POST['room']) && isset($_POST['room_id']) && isset($_POST['datetimes'])) { //Create Afrim and Log
+    } else if (isset($_POST['room']) && isset($_POST['room_id']) && isset($_POST['datetimes'])) {
+        //Create Afrim and Log
         $room_id = filter_input(INPUT_POST, 'room_id', FILTER_VALIDATE_INT);
         $room = filter_input(INPUT_POST, 'room', FILTER_SANITIZE_STRING);
         $datetimes = filter_input(INPUT_POST, 'datetimes', FILTER_SANITIZE_STRING);
+
+        // Split start and stop times (HH:mm format)
         $daterange = explode(' - ', $datetimes);
         $start_time = trim($daterange[0]);
         $stop_time = trim($daterange[1]);
+
+        // Tilføj dags dato til start- og stoptidspunkterne
+        $today = date('Y-m-d');
+        $start_time_full = $today . ' ' . $start_time . ':00';  // Laver til format Y-m-d H:i:s
+        $stop_time_full = $today . ' ' . $stop_time . ':00';    // Tilføj sekunder
+
+        // Indsæt værdier i afrim-tabellen
         $sql = "INSERT INTO afrim (start_time, stop_time, room_id) VALUES (?, ?, ?);";
-        $params = array($start_time, $stop_time, $room_id);
+        $params = array($start_time_full, $stop_time_full, $room_id);
         $db->query($sql, $params);
-        $message = "Afrim sat fra " . str_replace(" - ", " til ", $datetimes) . " på rum " . $room;
+
+        // Opret logbesked
+        $message = "Afrim sat fra " . $start_time . " til " . $stop_time . " på rum " . $room;
+        $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
+        $params = array(date('Y-m-d H:i:s'), 3, $message);
+        $db->query($sql, $params);
+    }
+
+    $message = "Afrim sat fra " . str_replace(" - ", " til ", $datetimes) . " på rum " . $room;
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
         $params = array(date('Y-m-d H:i:s'), 3, $message);
         $db->query($sql, $params);
@@ -234,9 +252,7 @@ if ($db->connect()) {
                                 </button>
                                 </div>
                             </form>
-                            <p>
-                            Planlagte afrimning: <br><?php echo $item['afrim']; ?>
-                            </p>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -250,16 +266,19 @@ if ($db->connect()) {
     $(function () {
         $(".datepicker").attr("autocomplete", "off");
         $('input[name="datetimes"]').daterangepicker({
-            autocomplete:"off",
-            timePicker24Hour: true,
             timePicker: true,
-            startDate: moment().startOf('hour'),
-            endDate: moment().startOf('hour').add(2, "hours"),
-            minDate: moment().add(2, "hours"),
-            linkedCalendars: true,
+            timePicker24Hour: true,
+            timePickerSeconds: false,
+            singleDatePicker: false,
+            showDropdowns: false,
             locale: {
-                format: 'DD-MM-YYYY HH:mm:ss'
-            }
+                format: 'HH:mm',
+                applyLabel: "Vælg",
+                cancelLabel: "Annuller"
+            },
+            startDate: moment().startOf('hour'),
+            endDate: moment().startOf('hour').add(1, 'hours')
         });
     });
 </script>
+
