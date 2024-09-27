@@ -28,19 +28,18 @@ if ($db->connect()) {
         $stop_hour = filter_input(INPUT_POST, 'stop_hour', FILTER_VALIDATE_INT);
         $stop_minute = filter_input(INPUT_POST, 'stop_minute', FILTER_VALIDATE_INT);
 
-        // Skab tidspunkter for start og stop
-        $start_time = sprintf('%02d:%02d', $start_hour, $start_minute);
-        $stop_time = sprintf('%02d:%02d', $stop_hour, $stop_minute);
-
-        // Opdaterer værdierne i afrim-tabellen
-        $sql = "UPDATE afrim SET start_hour = ?, start_minute = ?, stop_hour = ?, stop_minute = ? WHERE room_id = ?;";
+        $sql = "UPDATE afrim 
+            SET start_hour = ?, start_minute = ?, stop_hour = ?, stop_minute = ?
+            WHERE room_id = ?;";
         $params = array($start_hour, $start_minute, $stop_hour, $stop_minute, $room_id);
         $db->query($sql, $params);
 
-        $message = "Afrim sat fra " . $start_time . " til " . $stop_time . " på rum " . $room;
+        // Log the update
+        $message = "Afrim updated to start at $start_hour:$start_minute and end at $stop_hour:$stop_minute for room $room.";
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
         $params = array(date('Y-m-d H:i:s'), 3, $message);
         $db->query($sql, $params);
+
     } else if (isset($_POST['room']) && isset($_POST['room_id'])) { //Update Alarm and Create Log
         $room_id = filter_input(INPUT_POST, 'room_id', FILTER_VALIDATE_INT);
         $room = filter_input(INPUT_POST, 'room', FILTER_SANITIZE_STRING);
