@@ -19,22 +19,22 @@ if ($db->connect()) {
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
         $params = array(date('Y-m-d H:i:s'), 2, $message);
         $db->query($sql, $params);
-    } else if (isset($_POST['room']) && isset($_POST['room_id']) && isset($_POST['datetimes'])) {
-
+    } else if (isset($_POST['room']) && isset($_POST['room_id']) && isset($_POST['start_hour']) && isset($_POST['start_minute']) && isset($_POST['stop_hour']) && isset($_POST['stop_minute'])) {
+        // Update afrim
         $room_id = filter_input(INPUT_POST, 'room_id', FILTER_VALIDATE_INT);
         $room = filter_input(INPUT_POST, 'room', FILTER_SANITIZE_STRING);
-        $datetimes = filter_input(INPUT_POST, 'datetimes', FILTER_SANITIZE_STRING);
+        $start_hour = filter_input(INPUT_POST, 'start_hour', FILTER_VALIDATE_INT);
+        $start_minute = filter_input(INPUT_POST, 'start_minute', FILTER_VALIDATE_INT);
+        $stop_hour = filter_input(INPUT_POST, 'stop_hour', FILTER_VALIDATE_INT);
+        $stop_minute = filter_input(INPUT_POST, 'stop_minute', FILTER_VALIDATE_INT);
 
-        $daterange = explode(' - ', $datetimes);
-        $start_time = trim($daterange[0]);
-        $stop_time = trim($daterange[1]);
+        // Skab tidspunkter for start og stop
+        $start_time = sprintf('%02d:%02d', $start_hour, $start_minute);
+        $stop_time = sprintf('%02d:%02d', $stop_hour, $stop_minute);
 
-        $today = date('Y-m-d');
-        $start_time_today = $today . ' ' . $start_time;
-        $stop_time_today = $today . ' ' . $stop_time;
-
-        $sql = "INSERT INTO afrim (start_time, stop_time, room_id) VALUES (?, ?, ?);";
-        $params = array($start_time_today, $stop_time_today, $room_id);
+        // Opdaterer værdierne i afrim-tabellen
+        $sql = "UPDATE afrim SET start_hour = ?, start_minute = ?, stop_hour = ?, stop_minute = ? WHERE room_id = ?;";
+        $params = array($start_hour, $start_minute, $stop_hour, $stop_minute, $room_id);
         $db->query($sql, $params);
 
         $message = "Afrim sat fra " . $start_time . " til " . $stop_time . " på rum " . $room;
