@@ -20,7 +20,7 @@ if ($db->connect()) {
         $params = array(date('Y-m-d H:i:s'), 2, $message);
         $db->query($sql, $params);
     } else if (isset($_POST['room']) && isset($_POST['room_id']) && isset($_POST['start_hour']) && isset($_POST['start_minute']) && isset($_POST['stop_hour']) && isset($_POST['stop_minute'])) {
-        // Update afrim
+
         $room_id = filter_input(INPUT_POST, 'room_id', FILTER_VALIDATE_INT);
         $room = filter_input(INPUT_POST, 'room', FILTER_SANITIZE_STRING);
         $start_hour = filter_input(INPUT_POST, 'start_hour', FILTER_VALIDATE_INT);
@@ -33,8 +33,7 @@ if ($db->connect()) {
             WHERE room_id = ?;";
         $params = array($start_hour, $start_minute, $stop_hour, $stop_minute, $room_id);
         $db->query($sql, $params);
-
-        // Log the update
+        
         $message = "Afrim updated to start at $start_hour:$start_minute and end at $stop_hour:$stop_minute for room $room.";
         $sql = "INSERT INTO log (created, type, message) VALUES (?, ?, ?);";
         $params = array(date('Y-m-d H:i:s'), 3, $message);
