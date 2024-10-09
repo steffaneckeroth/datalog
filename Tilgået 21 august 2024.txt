@@ -1,0 +1,32 @@
+Tilgået 21 august 2024
+
+JavaScript CHART DEMOS
+https://apexcharts.com/javascript-chart-demos/
+
+Getting Apache ECharts
+https://echarts.apache.org/handbook/en/get-started/
+
+What is D3?
+https://d3js.org/what-is-d3
+
+Chart Gallery
+https://developers.google.com/chart/interactive/docs/gallery
+
+Tilgået 23 august 2024
+Modpoll Modbus Master Simulator
+https://www.modbusdriver.com/modpoll.html
+
+Tilgået 5. september
+https://cronitor.io/guides/cron-jobs
+
+Tilgået 3. Oktober 2024
+I2C i2c-tools
+https://wiki.st.com/stm32mpu/wiki/I2C_i2c-tools
+
+Tilgået 2. oktober 2024
+Raspberry Pi Documentation - RP2350
+https://www.raspberrypi.com/documentation/microcontrollers/silicon.html
+
+Tilgået 2. oktober 2024
+RP2040 Datasheet - A microcontroller by Raspberyy Pi
+https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf
