@@ -30,3 +30,12 @@ https://www.raspberrypi.com/documentation/microcontrollers/silicon.html
 Tilgået 2. oktober 2024
 RP2040 Datasheet - A microcontroller by Raspberyy Pi
 https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf
+
+
+Flow
+
+- Core 0 tændes og sætter SPI op så den kan sætte chippen op kommunikere LSM6DSLTR
+- LSM6DSLTR laver målinger, tjekker boolean og sender data til 2D Array afhængig af bool state
+- Core 1 sætter I2C op så den kan sende data til Raspberry Pi
+- Et 1Hz signal trigger Core 1 som tjekker Boolean state og henter data fra 2D Array
+- Core 1 sender data til Raspberry Pi
